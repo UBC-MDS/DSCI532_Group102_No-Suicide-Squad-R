@@ -42,9 +42,9 @@ Select one or multiple countries
 #### Suicide Rate by Demographic Groups
 **Step 4:** This graph will automatically show the average suicide rates for 12 demographic groups based on the countries you selected previously.  
 
-![plot_1d_code](https://github.com/UBC-MDS/DSCI532_Group102_No_Suicide_Squad-R/blob/master/img/plot_1d_code.PNG)
+![plot_1d_code](https://github.com/UBC-MDS/DSCI532_Group102_No_Suicide_Squad-R/blob/master/img/plot_1d_code.png)
 
-![plot_1d_chart](https://github.com/UBC-MDS/DSCI532_Group102_No_Suicide_Squad-R/blob/master/img/plot_1d_chart.PNG)
+![plot_1d_chart](https://github.com/UBC-MDS/DSCI532_Group102_No_Suicide_Squad-R/blob/master/img/plot_1d_chart.png)
 
 ### Tab 2: Two Country Comparison
 **Step 1:** Select 2 countries that you would like to compare (1 country per dropdown).  
