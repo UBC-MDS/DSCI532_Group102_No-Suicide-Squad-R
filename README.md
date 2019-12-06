@@ -52,14 +52,14 @@ Select one or multiple countries
 
 **Step 2:** Select a range of years to see the average suicide rate for this time frame.
 
-![plot_2a_code](img/plot_2a_code.PNG)
+![plot_2a_code](img/plot_2a_code.png)
 
-![plot_2a_chart](img/plot_2a_chart.PNG)
+![plot_2a_chart](img/plot_2a_chart.png)
 
 **Step 3:** Select one or more groups to see average suicide rates by demographics in each country.
 
 [A checklist of the 12 demographic groups will appear here]
 
-![plot_2b_code](img/plot_2b_code.PNG)
+![plot_2b_code](img/plot_2b_code.png)
 
-![plot_2b_chart](img/plot_2b_chart.PNG)
+![plot_2b_chart](img/plot_2b_chart.png)
