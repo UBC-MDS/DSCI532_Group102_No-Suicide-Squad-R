@@ -15,7 +15,7 @@ Each observation represents a country’s annual suicide count from 1985 to 2016
 - Gender (Male / Female), and
 - Age Group (5-14, 15-24, 25-34, 35-54, 55-74 and 75+)
 <br/>
-In addition to the suicide count for each subsegment, we also have the country’s population for that subsegment, a suicide rate per 100k inhabitants, GDP for the year, and generation information for the demographic group  .
+In addition to the suicide count for each subsegment, we also have the country’s population for that subsegment, a suicide rate per 100k inhabitants, GDP for the year, and generation information for the demographic group.
 In order to calculate summarized indicators at the continent and region level, we have additionally joined this dataset with another dataset that associates each country to a continent and to a sub-region (e.g. North, Central, South America).
 <br/>
 
