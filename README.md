@@ -13,27 +13,27 @@ The purpose of this app is to help you visualize suicide rates in different loca
 #### Suicide Rate by Continent
 **Step 1:** This graph shows the average suicide rate over time, by continent.
 
-![plot_1a_code](img/plot_1a_code.PNG)
+![plot_1a_code](img/plot_1a_code.png)
 
-![plot_1a_chart](img/plot_1a_chart.PNG)
+![plot_1a_chart](img/plot_1a_chart.png)
 
 #### Suicide Rate by Region
 **Step 2:** Are there any sub-regions you are specifically interested in looking at?
 Select one or more sub-regions (arranged by continent) to view the average suicide rate by year.
 
 Select one or multiple Regions  
-![plot_1b_regions](img/plot_1b_regions.PNG)
+![plot_1b_regions](img/plot_1b_regions.png)
 
-![plot_1b_code](img/plot_1b_code.PNG)
+![plot_1b_code](img/plot_1b_code.png)
 
-![plot_1b_chart](img/plot_1b_chart.PNG)
+![plot_1b_chart](img/plot_1b_chart.png)
 
 #### Suicide Rate by Country
 **Step 3:** Are there any specific countries you’d like to look into?  
 Select one or more countries (arranged by continent) to view the average suicide rate by year.
 
 Select one or multiple countries  
-![plot_1c_countries](img/plot_1c_countries.PNG)
+![plot_1c_countries](img/plot_1c_countries.png)
 
 ![plot_1c_code](img/plot_1c_code.PNG)
 
