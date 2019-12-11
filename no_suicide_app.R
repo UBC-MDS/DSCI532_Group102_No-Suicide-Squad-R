@@ -25,12 +25,79 @@ general_data <- read_csv('data/general_data.csv')
 
 #### CHART FUNCTIONS
 # TAB (WORLDWIDE OVERVIEW)
+make_world_plot <- function(year_list = list(1987, 2014)) {
+  year_start <- year_list[[1]]
+  year_end <- year_list[[2]]
 
+<<<<<<< HEAD
 # TAB 1 - PLOT 1a (STATIC CONTINENTS)
 make_plot1a <- 
+=======
+  map_data <- final_df %>%
+    filter(between(year, year_start, year_end)) %>% 
+    group_by(year,country_code_name,country) %>% 
+    summarise(suicides_per_100k_pop = mean(suicides_per_100k_pop)) %>%
+    modify_if( ~is.numeric(.), ~round(., 2))
+
+  options(repr.plot.width = 7, repr.plot.height = 5)
+  l <- list(color = toRGB("black"), width = 0.5)
+  # specify map projection/options
+  g <- list(
+    #showframe = FALSE,
+    #showcoastlines = FALSE,
+    showocean = TRUE,
+    oceancolor = toRGB("#DCEEFF"),
+    projection = list(type = 'Natural earth')
+  )
+  map_plot <- plot_geo(map_data) %>%
+    add_trace(
+      z = ~suicides_per_100k_pop, color = ~suicides_per_100k_pop, colorscale='Magma', zmax = 10,
+      text = ~country, locations = ~country_code_name, marker = list(line = l)
+    ) %>%
+    colorbar(title = 'Annual Suicides per 100k pop') %>%
+    layout(
+      title = 'Average Suicide Rate per Country',
+      geo = g
+    )
+  return(map_plot)
+}
+
+
+
+
+
+# TAB 1 - PLOT 1A (STATIC CONTINENTS)
+make_plot1a <- function() {
+  #' Makes a plot showing suicide rate over time by continent
+  #'
+  #' @param None
+  #' @return An interactive plotly graph of suicide rate by continent
+  #' @examples
+  #' make_plot1a()
+    plot_1a <- ggplot() +
+    geom_line(data =plot_a_data, aes(x=year, y=suicides_per_100k_pop,color = continent),size = 1)+
+    geom_line(data =general_data, aes(x=year, y=suicides_per_100k_pop,color = Label),size = 1,linetype = "dashed")+
+    ggtitle("Suicide Rate by Continent") +
+    ylab("Suicides per 100k pop") +
+    xlab("Year") +
+    guides(color=guide_legend(title="Continents"))+
+    theme_bw()
+    plot_1a <- ggplotly(plot_1a)
+    return(plot_1a)
+}
+make_plot1a()
+
+>>>>>>> upstream/master
 
 # TAB 1 - PLOT 1b
 make_plot1b <- function(selected_regions = list('Central America','Western Europe')) {
+  #' Makes a plot showing suicide rate over time by region
+  #'
+  #' @param selected_regions A list of one or more regions
+  #' @return An interactive plotly graph of suicide rate by selected regions
+  #' @examples
+  #' make_plot1b(selected_regions = list("Northern America"))
+  #' make_plot1b(selected_regions = list("Central America", "Northern America"))
     regions <- c(selected_regions)
     a <- c('Central America','Western Europe')
     
@@ -56,6 +123,13 @@ make_plot1b <- function(selected_regions = list('Central America','Western Europ
 
 # TAB 1 - PLOT 1c
 make_plot1c <- function(selected_countries_c = list("Canada", "United States")) {
+  #' Makes a plot showing suicide rate over time by country
+  #'
+  #' @param selected_countries_c A list of one or more countries
+  #' @return An interactive plotly graph of suicide rate by selected countries
+  #' @examples
+  #' make_plot1c(selected_countries_c = list("Canada"))
+  #' make_plot1c(selected_countries_c = list("Canada", "United States"))
     countries_c <- c(selected_countries_c)
 
     country_df <- final_df %>%
@@ -78,6 +152,13 @@ make_plot1c <- function(selected_countries_c = list("Canada", "United States")) 
 
 # TAB 1 - PLOT 1d
 make_plot1d <- function(selected_countries_d = list("Canada", "United States")) {
+  #' Makes a plot showing suicide rate over time by demographic and country
+  #'
+  #' @param selected_countries_d A list of one or more countries
+  #' @return An interactive plotly graph of suicide rate by sex for selected countries
+  #' @examples
+  #' make_plot1d(selected_countries_d = list("Canada"))
+  #' make_plot1d(selected_countries_d = list("Canada", "United States"))
     countries_d <- c(selected_countries_d)
 
     demographic_df <- final_df %>%
@@ -100,6 +181,16 @@ make_plot1d <- function(selected_countries_d = list("Canada", "United States")) 
 
 # TAB 2 - PLOT 2a 
 make_plot2a <- function(country_a = 'Any Country', country_b = 'Any Country', year_list = list(1, 1)) {
+  #' Makes a plot showing suicide rate for 2 countries in a specified year range
+  #'
+  #' @param country_a A string of one country (default: "United States")
+  #' @param country_b A string of one country (default: "Canada")
+  #' @param year_list A list of year ranges (default: list(1986, 2014))
+  #' @return An interactive plotly graph of suicide rate for selected countries and year range
+  #' @examples
+  #' make_plot2a(country_a = "Brazil", country_b = "Japan", year_list = list(1987, 1996))
+  #' make_plot2a(country_a = "Ukraine", country_b = "Thailand", year_list = list(1993, 2010))
+    
     # Sets default values
     year_start <- year_list[[1]]
     year_end <- year_list[[2]]
@@ -129,6 +220,17 @@ make_plot2a <- function(country_a = 'Any Country', country_b = 'Any Country', ye
 
 # TAB 2 - PLOT 2Bb
 make_plot2b <- function(country_a = 'Any Country', country_b = 'Any Country', year_list = list(1,1), demo_selection = list('female : 25-34 years')) {
+  #' Makes plot(s) showing suicide rate by demographic group(s) for specified countries and year range
+  #'
+  #' @param country_a A string of one country (default: "United States")
+  #' @param country_b A string of one country (default: "Canada")
+  #' @param year_list A list of year ranges (default: list(1986, 2014))
+  #' @param demo_selection A list of one or more demographic groups (default: list('female: 25-34 years'))
+  #' @return Interactive plotly graphs of suicide rates for selected countries and year ranges by demographic group
+  #' @examples
+  #' make_plot2b(country_a = "Brazil", country_b = "Japan", year_list = list(1987, 1996), demo_selection = list('female: 55-74 years', 'male: 55-74 years'))
+  #' make_plot2b(country_a = "Ukraine", country_b = "Thailand", year_list = list(1993, 2010), demo_selection = list('female: 35-54 years', 'female: 15-24 years', 'male: 25-34 years'))
+    
     # Sets default values
     year_start <- year_list[[1]]
     year_end <- year_list[[2]]
@@ -157,6 +259,14 @@ make_plot2b <- function(country_a = 'Any Country', country_b = 'Any Country', ye
     return(chart_2b)
 }
 #### DCC GRAPHS
+<<<<<<< HEAD
+=======
+graph_wm <- dccGraph(
+  id = 'graph_wm',
+  figure = make_world_plot(list(2010, 2015))
+)
+
+>>>>>>> upstream/master
 graph_1a <- dccGraph(
   id = 'graph_1a',
   figure = make_plot1a()
@@ -228,6 +338,18 @@ countryDD2b <- dccDropdown(
     multi = TRUE
 )
 
+yearMarks_wm <- map(unique(final_df$year), as.character)
+names(yearMarks_wm) <- unique(final_df$year)
+yearSlider_wm <- dccRangeSlider(
+  id = 'year_slider_wm',
+  marks = yearMarks_wm,
+  min = 1986,
+  max = 2014,
+  step=1,
+  value = list(1986, 2014)
+)
+
+
 yearMarks2 <- map(unique(final_df$year), as.character)
 names(yearMarks2) <- unique(final_df$year)
 yearSlider2 <- dccRangeSlider(
@@ -269,7 +391,9 @@ app$layout(htmlDiv(list(
         label = 'Overview',
         value = 'tab value',
         children = htmlDiv(className = 'control-tab', children = list(
-          htmlP('Written instructions go here.', id = 'text0')
+          htmlP('Written instructions go here.', id = 'text0'),
+          yearSlider_wm,
+          graph_wm
 
         ))
       ),
