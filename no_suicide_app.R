@@ -27,7 +27,7 @@ general_data <- read_csv('data/general_data.csv')
 # TAB (WORLDWIDE OVERVIEW)
 
 # TAB 1 - PLOT 1a (STATIC CONTINENTS)
-
+make_plot1a <- 
 
 # TAB 1 - PLOT 1b
 make_plot1b <- function(selected_regions = list('Central America','Western Europe')) {
@@ -157,6 +157,11 @@ make_plot2b <- function(country_a = 'Any Country', country_b = 'Any Country', ye
     return(chart_2b)
 }
 #### DCC GRAPHS
+graph_1a <- dccGraph(
+  id = 'graph_1a',
+  figure = make_plot1a()
+)
+
 graph_1b <- dccGraph(
   id = 'graph_1b',
   figure = make_plot1b(list('Central America','Western Europe'))
@@ -225,7 +230,7 @@ countryDD2b <- dccDropdown(
 
 yearMarks2 <- map(unique(final_df$year), as.character)
 names(yearMarks2) <- unique(final_df$year)
-yearSlider <- dccRangeSlider(
+yearSlider2 <- dccRangeSlider(
   id = 'year_slider',
   marks = yearMarks2,
   min = 1986,
@@ -312,7 +317,7 @@ app$layout(htmlDiv(list(
           countryDD2a,
           countryDD2b,
           dccMarkdown('**Step 2:** Select a range of years to see the average suicide rate for this time frame.'),
-          yearSlider,
+          yearSlider2,
           graph_2a,
 
           # PLOT 2b
@@ -326,5 +331,50 @@ app$layout(htmlDiv(list(
 )))
 
 #### CALLBACKS
+
+# CALLBACK FOR PLOT 1b
+app$callback(
+  output=list(id = 'graph_1b', property='figure'),
+  params=list(input(id = 'regionDD', property='value')),
+  function(region_value) {
+    make_plot1b(region_value)
+  })
+
+# CALLBACK FOR PLOT 1c
+app$callback(
+  output=list(id = 'graph_1c', property='figure'),
+  params=list(input(id = 'countryDD1', property='value')),
+  function(country_value) {
+    make_plot1b(country_value)
+  })
+
+# CALLBACK FOR PLOT 1d
+app$callback(
+  output=list(id = 'graph_1d', property='figure'),
+  params=list(input(id = 'countryDD1', property='value')),
+  function(country_value) {
+    make_plot1b(country_value)
+  })
+
+# CALLBACK FOR PLOT 2a
+app$callback(
+  output=list(id = 'graph_2a', property='figure'),
+  params=list(input(id = 'countryDD2a', property='value'),
+              input(id = 'countryDD2b', property='value'),
+              input(id = 'yearSlider2', property='value')),
+  function(country_value1, country_value2) {
+    make_plot1b(country_value1, country_value2)
+  })
+
+# CALLBACK FOR PLOT 2b
+app$callback(
+  output=list(id = 'graph_2a', property='figure'),
+  params=list(input(id = 'countryDD2a', property='value'),
+              input(id = 'countryDD2b', property='value'),
+              input(id = 'yearSlider2', property='value'),
+              input(id = 'demoDD', property='value')),
+  function(country_value1, country_value2, year_list, demo_list) {
+    make_plot1b(country_value1, country_value2, year_list, demo_list)
+  })
 
 app$run_server()
