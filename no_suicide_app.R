@@ -254,14 +254,11 @@ make_plot2b <- function(country_a = 'Any Country', country_b = 'Any Country', ye
     return(chart_2b)
 }
 #### DCC GRAPHS
-<<<<<<< HEAD
-=======
 graph_wm <- dccGraph(
   id = 'graph_wm',
   figure = make_world_plot(list(2010, 2015))
 )
 
->>>>>>> upstream/master
 graph_1a <- dccGraph(
   id = 'graph_1a',
   figure = make_plot1a()
