@@ -21,6 +21,89 @@ final_df <- read_csv('data/final_df.csv')
 plot_a_data <- read_csv('data/plot_a_data.csv')
 general_data <- read_csv('data/general_data.csv')
 
+#### DROPDOWNS
+regionDD <- dccDropdown(
+  id = 'region_dd',
+  options = lapply(
+    unique(final_df$sub_region), function(x){
+      list(label=x, value=x)
+    }),
+    value = levels(final_df$sub_region),
+    multi = TRUE
+)
+
+countryDD1 <- dccDropdown(
+  id = 'country_dd_1',
+  options = lapply(
+    unique(final_df$country), function(x){
+      list(label=x, value=x)
+    }),
+    value = levels(final_df$country),
+    multi = TRUE
+)
+
+countryDD2a <- dccDropdown(
+  id = 'country_dd_2a',
+  options = lapply(
+    unique(final_df$country), function(x){
+      list(label=x, value=x)
+    }),
+    value = levels(final_df$country),
+    multi = TRUE
+)
+
+countryDD2b <- dccDropdown(
+  id = 'country_dd_2b',
+  options = lapply(
+    unique(final_df$country), function(x){
+      list(label=x, value=x)
+    }),
+    value = levels(final_df$country),
+    multi = TRUE
+)
+
+yearMarks_wm <- lapply(unique(final_df$year), as.character)
+names(yearMarks_wm) <- unique(final_df$year)
+yearSlider_wm <- dccRangeSlider(
+  id = 'year_slider_wm',
+  marks = yearMarks_wm,
+  min = 1986,
+  max = 2014,
+  step = 1,
+  value = list(1986, 2014)
+)
+
+yearMarks2 <- lapply(unique(final_df$year), as.character)
+names(yearMarks2) <- unique(final_df$year)
+yearSlider2 <- dccRangeSlider(
+  id = 'year_slider',
+  marks = yearMarks2,
+  min = 1986,
+  max = 2014,
+  step = 1,
+  value = list(1986, 2014)
+)
+
+demoCC <- dccDropdown(
+  id = 'demo_cc',
+  value = lapply(
+    unique(final_df$demo_group), function(x){
+      list(label=x, value=x)
+    }),
+    #value = levels(final_df$demo_group),
+  multi = TRUE
+)
+
+countryDD2a <- dccDropdown(
+  id = 'country_dd_2a',
+  options = lapply(
+    unique(final_df$country), function(x){
+      list(label=x, value=x)
+    }),
+    value = levels(final_df$country),
+    multi = TRUE
+)
+
 #### CHART FUNCTIONS
 # TAB (WORLDWIDE OVERVIEW)
 make_world_plot <- function(year_list = list(1987, 2014)) {
@@ -56,10 +139,6 @@ make_world_plot <- function(year_list = list(1987, 2014)) {
   return(map_plot)
 }
 
-
-
-
-
 # TAB 1 - PLOT 1A (STATIC CONTINENTS)
 make_plot1a <- function() {
   #' Makes a plot showing suicide rate over time by continent
@@ -79,8 +158,6 @@ make_plot1a <- function() {
     plot_1a <- ggplotly(plot_1a)
     return(plot_1a)
 }
-make_plot1a()
-
 
 # TAB 1 - PLOT 1b
 make_plot1b <- function(selected_regions = list('Central America','Western Europe')) {
@@ -92,10 +169,10 @@ make_plot1b <- function(selected_regions = list('Central America','Western Europ
   #' make_plot1b(selected_regions = list("Northern America"))
   #' make_plot1b(selected_regions = list("Central America", "Northern America"))
     regions <- c(selected_regions)
-    a <- c('Central America','Western Europe')
+    #a <- c('Central America','Western Europe')
     
     plot_b_data <- final_df %>%
-    filter(sub_region %in% a) %>%
+    filter(sub_region %in% selected_regions) %>%
     group_by(year,sub_region) %>% 
     summarise(suicides_per_100k_pop = mean(suicides_per_100k_pop)) %>%
     modify_if( ~is.numeric(.), ~round(., 2))
@@ -251,10 +328,11 @@ make_plot2b <- function(country_a = 'Any Country', country_b = 'Any Country', ye
     chart_2b <- ggplotly(chart_2b, tooltip = c("mean_suicides")) %>% config(displayModeBar = FALSE)
     return(chart_2b)
 }
+
 #### DCC GRAPHS
 graph_wm <- dccGraph(
   id = 'graph_wm',
-  figure = make_world_plot(list(2010, 2015))
+  figure = make_world_plot()
 )
 
 graph_1a <- dccGraph(
@@ -264,7 +342,7 @@ graph_1a <- dccGraph(
 
 graph_1b <- dccGraph(
   id = 'graph_1b',
-  figure = make_plot1b(list('Central America','Western Europe'))
+  figure = make_plot1b()
 )
 
 graph_1c <- dccGraph(
@@ -287,75 +365,6 @@ graph_2b <- dccGraph(
   figure = make_plot2b('Canada', 'United States', list(2010,2012), list('male : 15-24 years', 'female : 15-24 years'))
 )
 
-#### DROPDOWNS
-regionDD <- dccDropdown(
-  id = 'region_dd',
-  options = map(
-    levels(final_df$sub_region), function(x){
-      list(label=x, value=x)
-    }),
-    value = levels(final_df$sub_region),
-    multi = TRUE
-)
-
-countryDD1 <- dccDropdown(
-  id = 'country_dd_1',
-  options = map(
-    levels(final_df$country), function(x){
-      list(label=x, value=x)
-    }),
-    value = levels(final_df$country),
-    multi = TRUE
-)
-
-countryDD2a <- dccDropdown(
-  id = 'country_dd_2a',
-  options = map(
-    levels(final_df$country), function(x){
-      list(label=x, value=x)
-    }),
-    value = levels(final_df$country),
-    multi = TRUE
-)
-
-countryDD2b <- dccDropdown(
-  id = 'country_dd_2b',
-  options = map(
-    levels(final_df$country), function(x){
-      list(label=x, value=x)
-    }),
-    value = levels(final_df$country),
-    multi = TRUE
-)
-
-yearMarks_wm <- map(unique(final_df$year), as.character)
-names(yearMarks_wm) <- unique(final_df$year)
-yearSlider_wm <- dccRangeSlider(
-  id = 'year_slider_wm',
-  marks = yearMarks_wm,
-  min = 1986,
-  max = 2014,
-  step=1,
-  value = list(1986, 2014)
-)
-
-
-yearMarks2 <- map(unique(final_df$year), as.character)
-names(yearMarks2) <- unique(final_df$year)
-yearSlider2 <- dccRangeSlider(
-  id = 'year_slider',
-  marks = yearMarks2,
-  min = 1986,
-  max = 2014,
-  step=1,
-  value = list(1986, 2014)
-)
-
-demoCC <- dccDropdown(
-  id = 'demo_cc',
-  value = levels(final_df$demo_group),
-  multi = TRUE
-)
 
 #### SET UP LAYOUT
 app$layout(htmlDiv(list(
