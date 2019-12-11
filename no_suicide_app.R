@@ -25,8 +25,43 @@ general_data <- read_csv('data/general_data.csv')
 
 #### CHART FUNCTIONS
 # TAB (WORLDWIDE OVERVIEW)
+make_world_plot <- function(year_list = list(1987, 2014)) {
+  year_start <- year_list[[1]]
+  year_end <- year_list[[2]]
 
-<<<<<<< HEAD
+  map_data <- final_df %>%
+    filter(between(year, year_start, year_end)) %>% 
+    group_by(year,country_code_name,country) %>% 
+    summarise(suicides_per_100k_pop = mean(suicides_per_100k_pop)) %>%
+    modify_if( ~is.numeric(.), ~round(., 2))
+
+  options(repr.plot.width = 7, repr.plot.height = 5)
+  l <- list(color = toRGB("black"), width = 0.5)
+  # specify map projection/options
+  g <- list(
+    #showframe = FALSE,
+    #showcoastlines = FALSE,
+    showocean = TRUE,
+    oceancolor = toRGB("#DCEEFF"),
+    projection = list(type = 'Natural earth')
+  )
+  map_plot <- plot_geo(map_data) %>%
+    add_trace(
+      z = ~suicides_per_100k_pop, color = ~suicides_per_100k_pop, colorscale='Magma', zmax = 10,
+      text = ~country, locations = ~country_code_name, marker = list(line = l)
+    ) %>%
+    colorbar(title = 'Annual Suicides per 100k pop') %>%
+    layout(
+      title = 'Average Suicide Rate per Country',
+      geo = g
+    )
+  return(map_plot)
+}
+
+
+
+
+
 # TAB 1 - PLOT 1A (STATIC CONTINENTS)
 make_plot1a <- function() {
   #' Makes a plot showing suicide rate over time by continent
@@ -47,9 +82,6 @@ make_plot1a <- function() {
     return(plot_1a)
 }
 make_plot1a()
-=======
-# TAB 1 - PLOT 1a (STATIC CONTINENTS)
->>>>>>> upstream/master
 
 
 # TAB 1 - PLOT 1b
@@ -222,6 +254,16 @@ make_plot2b <- function(country_a = 'Any Country', country_b = 'Any Country', ye
     return(chart_2b)
 }
 #### DCC GRAPHS
+graph_wm <- dccGraph(
+  id = 'graph_wm',
+  figure = make_world_plot(list(2010, 2015))
+)
+
+graph_1a <- dccGraph(
+  id = 'graph_1a',
+  figure = make_plot1a()
+)
+
 graph_1b <- dccGraph(
   id = 'graph_1b',
   figure = make_plot1b(list('Central America','Western Europe'))
@@ -288,6 +330,18 @@ countryDD2b <- dccDropdown(
     multi = TRUE
 )
 
+yearMarks_wm <- map(unique(final_df$year), as.character)
+names(yearMarks_wm) <- unique(final_df$year)
+yearSlider_wm <- dccRangeSlider(
+  id = 'year_slider_wm',
+  marks = yearMarks_wm,
+  min = 1986,
+  max = 2014,
+  step=1,
+  value = list(1986, 2014)
+)
+
+
 yearMarks2 <- map(unique(final_df$year), as.character)
 names(yearMarks2) <- unique(final_df$year)
 yearSlider <- dccRangeSlider(
@@ -329,7 +383,9 @@ app$layout(htmlDiv(list(
         label = 'Overview',
         value = 'tab value',
         children = htmlDiv(className = 'control-tab', children = list(
-          htmlP('Written instructions go here.', id = 'text0')
+          htmlP('Written instructions go here.', id = 'text0'),
+          yearSlider_wm,
+          graph_wm
 
         ))
       ),
