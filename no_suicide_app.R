@@ -4,7 +4,6 @@ library(dash)
 library(dashCoreComponents)
 library(dashHtmlComponents)
 library(dashTable)
-library(tidyverse)
 library(plotly)
 library(tidyverse, quiet = TRUE)
 library(cowplot)
@@ -12,7 +11,6 @@ library(gapminder)
 library(ggridges) 
 library(scales)
 library(janitor)
-library(plotly)
 library(ggthemes)
 theme_set(theme_cowplot())
 
@@ -385,6 +383,7 @@ app$layout(htmlDiv(list(
         children = htmlDiv(className = 'control-tab', children = list(
           htmlP('Written instructions go here.', id = 'text0'),
           yearSlider_wm,
+          htmlIframe(height=15, width=5, style=list(borderWidth = 0)), #space
           graph_wm
 
         ))
@@ -434,6 +433,7 @@ app$layout(htmlDiv(list(
           countryDD2b,
           dccMarkdown('**Step 2:** Select a range of years to see the average suicide rate for this time frame.'),
           yearSlider2,
+          htmlIframe(height=15, width=5, style=list(borderWidth = 0)), #space
           graph_2a,
 
           # PLOT 2b
