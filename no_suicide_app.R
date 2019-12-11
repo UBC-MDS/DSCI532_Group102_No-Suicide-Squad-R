@@ -29,12 +29,8 @@ make_world_plot <- function(year_list = list(1987, 2014)) {
   year_start <- year_list[[1]]
   year_end <- year_list[[2]]
 
-<<<<<<< HEAD
-# TAB 1 - PLOT 1a (STATIC CONTINENTS)
-make_plot1a <- 
-=======
   map_data <- final_df %>%
-    filter(between(year, year_start, year_end)) %>% 
+    filter(between(year, year_start, year_end)) %>%
     group_by(year,country_code_name,country) %>% 
     summarise(suicides_per_100k_pop = mean(suicides_per_100k_pop)) %>%
     modify_if( ~is.numeric(.), ~round(., 2))
@@ -87,7 +83,6 @@ make_plot1a <- function() {
 }
 make_plot1a()
 
->>>>>>> upstream/master
 
 # TAB 1 - PLOT 1b
 make_plot1b <- function(selected_regions = list('Central America','Western Europe')) {
@@ -259,14 +254,11 @@ make_plot2b <- function(country_a = 'Any Country', country_b = 'Any Country', ye
     return(chart_2b)
 }
 #### DCC GRAPHS
-<<<<<<< HEAD
-=======
 graph_wm <- dccGraph(
   id = 'graph_wm',
   figure = make_world_plot(list(2010, 2015))
 )
 
->>>>>>> upstream/master
 graph_1a <- dccGraph(
   id = 'graph_1a',
   figure = make_plot1a()
