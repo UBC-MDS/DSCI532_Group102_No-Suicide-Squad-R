@@ -49,7 +49,7 @@ countryDD2a <- dccDropdown(
       list(label=x, value=x)
     }),
     value = levels(final_df$country),
-    multi = TRUE
+    multi = FALSE
 )
 
 countryDD2b <- dccDropdown(
@@ -59,7 +59,7 @@ countryDD2b <- dccDropdown(
       list(label=x, value=x)
     }),
     value = levels(final_df$country),
-    multi = TRUE
+    multi = FALSE
 )
 
 yearMarks_wm <- lapply(unique(final_df$year), as.character)
@@ -86,21 +86,11 @@ yearSlider2 <- dccRangeSlider(
 
 demoCC <- dccDropdown(
   id = 'demo_cc',
-  value = lapply(
+  options = lapply(
     unique(final_df$demo_group), function(x){
       list(label=x, value=x)
     }),
-    #value = levels(final_df$demo_group),
-  multi = TRUE
-)
-
-countryDD2a <- dccDropdown(
-  id = 'country_dd_2a',
-  options = lapply(
-    unique(final_df$country), function(x){
-      list(label=x, value=x)
-    }),
-    value = levels(final_df$country),
+    value = levels(final_df$demo_group),
     multi = TRUE
 )
 
@@ -250,7 +240,7 @@ make_plot1d <- function(selected_countries_d = list("Canada", "United States")) 
 }
 
 # TAB 2 - PLOT 2a 
-make_plot2a <- function(country_a = 'Any Country', country_b = 'Any Country', year_list = list(1, 1)) {
+make_plot2a <- function(country_a = 'Canada', country_b = 'United States', year_list = list(1, 1)) {
   #' Makes a plot showing suicide rate for 2 countries in a specified year range
   #'
   #' @param country_a A string of one country (default: "United States")
@@ -265,15 +255,12 @@ make_plot2a <- function(country_a = 'Any Country', country_b = 'Any Country', ye
     year_start <- year_list[[1]]
     year_end <- year_list[[2]]
     
-    a = country_a
-    b = country_b
-    
     fill_colors = c("#699FA1", "#DD8627")
     
     data_2a <- final_df %>%
     filter(suicides_per_100k_pop > 0.1) %>%
     filter(year >= year_start & year <= year_end) %>%
-    filter(country == a | country == b) %>%
+    filter(country == country_a | country == country_b) %>%
     group_by(country) %>%
     summarize(mean_suicides = mean(suicides_per_100k_pop, na.rm = TRUE))
 
@@ -284,12 +271,12 @@ make_plot2a <- function(country_a = 'Any Country', country_b = 'Any Country', ye
         labs(x = 'Country', y = 'Average Suicide Rate (per 100k pop)', title = 'Suicide Rate by Country') +
         coord_flip() +
         theme(legend.position = "none") 
-    chart_2a <- ggplotly(chart_2a, tooltip = c("suicide_rate")) %>% config(displayModeBar = FALSE)
+    chart_2a <- ggplotly(chart_2a, tooltip = c("mean_suicides")) %>% config(displayModeBar = FALSE)
     return(chart_2a)
 }
 
-# TAB 2 - PLOT 2Bb
-make_plot2b <- function(country_a = 'Any Country', country_b = 'Any Country', year_list = list(1,1), demo_selection = list('female : 25-34 years')) {
+# TAB 2 - PLOT 2b
+make_plot2b <- function(country_a = 'Canada', country_b = 'United States', year_list = list(1,1), demo_selection = list('female : 25-34 years')) {
   #' Makes plot(s) showing suicide rate by demographic group(s) for specified countries and year range
   #'
   #' @param country_a A string of one country (default: "United States")
@@ -306,15 +293,12 @@ make_plot2b <- function(country_a = 'Any Country', country_b = 'Any Country', ye
     year_end <- year_list[[2]]
     demos <- c(demo_selection)
     
-    a = country_a
-    b = country_b
-    
     fill_colors = c("#699FA1", "#DD8627")
     
     data_2b <- final_df %>%
     filter(suicides_per_100k_pop > 0.1) %>%
     filter(year >= year_start & year <= year_end) %>%
-    filter(country == a | country == b) %>%
+    filter(country == country_a | country == country_b) %>%
     filter(demo_group %in% demos) %>%
     group_by(country, demo_group) %>%
     summarize(mean_suicides = mean(suicides_per_100k_pop, na.rm = TRUE))
@@ -323,7 +307,7 @@ make_plot2b <- function(country_a = 'Any Country', country_b = 'Any Country', ye
         theme_bw() +
         geom_bar(aes(x = fct_rev(demo_group), y = mean_suicides, fill = country), stat = 'identity', position = position_dodge(width = 0.9)) +
         scale_fill_manual(values = fill_colors) +    
-        labs(x = 'Country', y = 'Average Suicide Rate (per 100k pop)', title = 'Suicide Rate by Demographic Group')
+        labs(x = 'Demographic Groups', y = 'Average Suicide Rate (per 100k pop)', title = 'Suicide Rate by Demographic Group')
 
     chart_2b <- ggplotly(chart_2b, tooltip = c("mean_suicides")) %>% config(displayModeBar = FALSE)
     return(chart_2b)
@@ -347,24 +331,23 @@ graph_1b <- dccGraph(
 
 graph_1c <- dccGraph(
   id = 'graph_1c',
-  figure = make_plot1c(list("Canada", "United States")) 
+  figure = make_plot1c() 
 )
 
 graph_1d <- dccGraph(
   id = 'graph_1d',
-  figure = make_plot1d(list("Canada", "United States"))
+  figure = make_plot1d()
 )
 
 graph_2a <- dccGraph(
   id = 'graph_2a',
-  figure = make_plot2a('Canada', 'United States', list(2010, 2015))
+  figure = make_plot2a()
 )
 
 graph_2b <- dccGraph(
   id = 'graph_2b',
-  figure = make_plot2b('Canada', 'United States', list(2010,2012), list('male : 15-24 years', 'female : 15-24 years'))
+  figure = make_plot2b()
 )
-
 
 #### SET UP LAYOUT
 app$layout(htmlDiv(list(
@@ -431,7 +414,7 @@ app$layout(htmlDiv(list(
       ),
       
       dccTab(
-        label = 'Tab 3: Two Country Comparison',
+        label = 'Tab 2: Two Country Comparison',
         value = 'two country comparison',
         children = htmlDiv(className = 'control-tab', children = list(
           htmlH2('Two Country Comparison'),
@@ -457,10 +440,18 @@ app$layout(htmlDiv(list(
 
 #### CALLBACKS
 
+# CALLBACK FOR WORLDWIDE OVERVIEW PLOT
+app$callback(
+  output=list(id = 'graph_wm', property='figure'),
+  params=list(input(id = 'year_slider_wm', property='value')),
+  function(year_list) {
+    make_world_plot(year_list)
+  })
+
 # CALLBACK FOR PLOT 1b
 app$callback(
   output=list(id = 'graph_1b', property='figure'),
-  params=list(input(id = 'regionDD', property='value')),
+  params=list(input(id = 'region_dd', property='value')),
   function(region_value) {
     make_plot1b(region_value)
   })
@@ -468,38 +459,38 @@ app$callback(
 # CALLBACK FOR PLOT 1c
 app$callback(
   output=list(id = 'graph_1c', property='figure'),
-  params=list(input(id = 'countryDD1', property='value')),
+  params=list(input(id = 'country_dd_1', property='value')),
   function(country_value) {
-    make_plot1b(country_value)
+    make_plot1c(country_value)
   })
 
 # CALLBACK FOR PLOT 1d
 app$callback(
   output=list(id = 'graph_1d', property='figure'),
-  params=list(input(id = 'countryDD1', property='value')),
+  params=list(input(id = 'country_dd_1', property='value')),
   function(country_value) {
-    make_plot1b(country_value)
+    make_plot1d(country_value)
   })
 
 # CALLBACK FOR PLOT 2a
 app$callback(
   output=list(id = 'graph_2a', property='figure'),
-  params=list(input(id = 'countryDD2a', property='value'),
-              input(id = 'countryDD2b', property='value'),
-              input(id = 'yearSlider2', property='value')),
-  function(country_value1, country_value2) {
-    make_plot1b(country_value1, country_value2)
+  params=list(input(id = 'country_dd_2a', property='value'),
+              input(id = 'country_dd_2b', property='value'),
+              input(id = 'year_slider', property='value')),
+  function(country_value1, country_value2, year_list) {
+    make_plot2a(country_value1, country_value2, year_list)
   })
 
 # CALLBACK FOR PLOT 2b
 app$callback(
-  output=list(id = 'graph_2a', property='figure'),
-  params=list(input(id = 'countryDD2a', property='value'),
-              input(id = 'countryDD2b', property='value'),
-              input(id = 'yearSlider2', property='value'),
-              input(id = 'demoDD', property='value')),
+  output=list(id = 'graph_2b', property='figure'),
+  params=list(input(id = 'country_dd_2a', property='value'),
+              input(id = 'country_dd_2b', property='value'),
+              input(id = 'year_slider', property='value'),
+              input(id = 'demo_cc', property='value')),
   function(country_value1, country_value2, year_list, demo_list) {
-    make_plot1b(country_value1, country_value2, year_list, demo_list)
+    make_plot2b(country_value1, country_value2, year_list, demo_list)
   })
 
 app$run_server()
