@@ -3,16 +3,11 @@
 library(dash)
 library(dashCoreComponents)
 library(dashHtmlComponents)
-library(dashTable)
+#library(dashTable)
 library(plotly)
 library(tidyverse, quiet = TRUE)
-library(cowplot)
-library(gapminder)
-library(ggridges) 
-library(scales)
-library(janitor)
 library(ggthemes)
-theme_set(theme_cowplot())
+theme_set(theme_bw())
 
 app <- Dash$new(external_stylesheets = "https://codepen.io/chriddyp/pen/bWLwgP.css")
 
@@ -28,7 +23,7 @@ regionDD <- dccDropdown(
     unique(final_df$sub_region), function(x){
       list(label=x, value=x)
     }),
-    value = levels(final_df$sub_region),
+    #value = levels(final_df$sub_region),
     multi = TRUE
 )
 
@@ -38,7 +33,7 @@ countryDD1 <- dccDropdown(
     unique(final_df$country), function(x){
       list(label=x, value=x)
     }),
-    value = levels(final_df$country),
+    #value = 'Australia',
     multi = TRUE
 )
 
@@ -48,7 +43,7 @@ countryDD2a <- dccDropdown(
     unique(final_df$country), function(x){
       list(label=x, value=x)
     }),
-    value = levels(final_df$country),
+    value = 'Canada',
     multi = FALSE
 )
 
@@ -58,7 +53,7 @@ countryDD2b <- dccDropdown(
     unique(final_df$country), function(x){
       list(label=x, value=x)
     }),
-    value = levels(final_df$country),
+    value = 'United States',
     multi = FALSE
 )
 
@@ -90,7 +85,7 @@ demoCC <- dccDropdown(
     unique(final_df$demo_group), function(x){
       list(label=x, value=x)
     }),
-    value = levels(final_df$demo_group),
+    value = 'female : 25-34 years',
     multi = TRUE
 )
 
@@ -138,8 +133,8 @@ make_plot1a <- function() {
   #' @examples
   #' make_plot1a()
     plot_1a <- ggplot() +
-    geom_line(data =plot_a_data, aes(x=year, y=suicides_per_100k_pop,color = continent),size = 1)+
-    geom_line(data =general_data, aes(x=year, y=suicides_per_100k_pop,color = Label),size = 1,linetype = "dashed")+
+    geom_line(data =plot_a_data, aes(x=year, y=suicides_per_100k_pop,color = continent))+
+    geom_line(data =general_data, aes(x=year, y=suicides_per_100k_pop,color = Label),linetype = "dashed")+
     ggtitle("Suicide Rate by Continent") +
     ylab("Suicides per 100k pop") +
     xlab("Year") +
@@ -169,8 +164,8 @@ make_plot1b <- function(selected_regions = list('Central America','Western Europ
     
     options(repr.plot.width = 7, repr.plot.height = 5)
     plot_1_b <- ggplot() +
-    geom_line(data =general_data, aes(x=year, y=suicides_per_100k_pop,color = Label),size = 1,linetype = "dashed")+
-    geom_line(data =plot_b_data, aes(x=year, y=suicides_per_100k_pop,color = sub_region),size = 1)+
+    geom_line(data =general_data, aes(x=year, y=suicides_per_100k_pop,color = Label), linetype = "dashed")+
+    geom_line(data =plot_b_data, aes(x=year, y=suicides_per_100k_pop,color = sub_region))+
     ggtitle("Suicide Rate by Region") +
     ylab("Suicides per 100k pop") +
     xlab("Year") +
@@ -229,11 +224,11 @@ make_plot1d <- function(selected_countries_d = list("Canada", "United States")) 
 
     options(repr.plot.width = 7, repr.plot.height = 5)
     demographic_plot <- ggplot(data = demographic_df, aes(x = year, y = suicide_rate, fill = sex, color = sex)) + 
-    geom_line() + 
-    labs(x = "Year", 
-         y = "Suicides per 100 k pop", 
-         title = "Average Suicide Rate by Sex in Selected Country (Countries)",
-         color = "Sex")
+      geom_line() + 
+      labs(x = "Year", 
+          y = "Suicides per 100 k pop", 
+          title = "Average Suicide Rate by Sex in Selected Country (Countries)",
+          color = "Sex")
 
     dem_plot <- ggplotly(demographic_plot)
     return(dem_plot)
@@ -243,8 +238,8 @@ make_plot1d <- function(selected_countries_d = list("Canada", "United States")) 
 make_plot2a <- function(country_a = 'Canada', country_b = 'United States', year_list = list(1, 1)) {
   #' Makes a plot showing suicide rate for 2 countries in a specified year range
   #'
-  #' @param country_a A string of one country (default: "United States")
-  #' @param country_b A string of one country (default: "Canada")
+  #' @param country_a A string of one country (default: "Canada")
+  #' @param country_b A string of one country (default: "United States")
   #' @param year_list A list of year ranges (default: list(1986, 2014))
   #' @return An interactive plotly graph of suicide rate for selected countries and year range
   #' @examples
@@ -255,19 +250,16 @@ make_plot2a <- function(country_a = 'Canada', country_b = 'United States', year_
     year_start <- year_list[[1]]
     year_end <- year_list[[2]]
     
-    fill_colors = c("#699FA1", "#DD8627")
-    
     data_2a <- final_df %>%
-    filter(suicides_per_100k_pop > 0.1) %>%
-    filter(year >= year_start & year <= year_end) %>%
-    filter(country == country_a | country == country_b) %>%
-    group_by(country) %>%
-    summarize(mean_suicides = mean(suicides_per_100k_pop, na.rm = TRUE))
+      filter(suicides_per_100k_pop > 0.1) %>%
+      filter(year >= year_start & year <= year_end) %>%
+      filter(country == country_a | country == country_b) %>%
+      group_by(country) %>%
+      summarize(mean_suicides = mean(suicides_per_100k_pop, na.rm = TRUE))
 
     chart_2a <- ggplot(data_2a) +
         theme_bw() +
         geom_bar(aes(x = fct_rev(country), y = mean_suicides, fill = country), stat = 'identity') +
-        scale_fill_manual(values = fill_colors) +
         labs(x = 'Country', y = 'Average Suicide Rate (per 100k pop)', title = 'Suicide Rate by Country') +
         coord_flip() +
         theme(legend.position = "none") 
@@ -279,8 +271,8 @@ make_plot2a <- function(country_a = 'Canada', country_b = 'United States', year_
 make_plot2b <- function(country_a = 'Canada', country_b = 'United States', year_list = list(1,1), demo_selection = list('female : 25-34 years')) {
   #' Makes plot(s) showing suicide rate by demographic group(s) for specified countries and year range
   #'
-  #' @param country_a A string of one country (default: "United States")
-  #' @param country_b A string of one country (default: "Canada")
+  #' @param country_a A string of one country (default: "Canada")
+  #' @param country_b A string of one country (default: "United States")
   #' @param year_list A list of year ranges (default: list(1986, 2014))
   #' @param demo_selection A list of one or more demographic groups (default: list('female: 25-34 years'))
   #' @return Interactive plotly graphs of suicide rates for selected countries and year ranges by demographic group
@@ -292,9 +284,7 @@ make_plot2b <- function(country_a = 'Canada', country_b = 'United States', year_
     year_start <- year_list[[1]]
     year_end <- year_list[[2]]
     demos <- c(demo_selection)
-    
-    fill_colors = c("#699FA1", "#DD8627")
-    
+
     data_2b <- final_df %>%
     filter(suicides_per_100k_pop > 0.1) %>%
     filter(year >= year_start & year <= year_end) %>%
@@ -305,8 +295,7 @@ make_plot2b <- function(country_a = 'Canada', country_b = 'United States', year_
     
     chart_2b <- ggplot(data_2b) +
         theme_bw() +
-        geom_bar(aes(x = fct_rev(demo_group), y = mean_suicides, fill = country), stat = 'identity', position = position_dodge(width = 0.9)) +
-        scale_fill_manual(values = fill_colors) +    
+        geom_bar(aes(x = fct_rev(demo_group), y = mean_suicides, fill = country), stat = 'identity', position = position_dodge(width = 0.9)) + 
         labs(x = 'Demographic Groups', y = 'Average Suicide Rate (per 100k pop)', title = 'Suicide Rate by Demographic Group')
 
     chart_2b <- ggplotly(chart_2b, tooltip = c("mean_suicides")) %>% config(displayModeBar = FALSE)
@@ -429,7 +418,8 @@ app$layout(htmlDiv(list(
           graph_2a,
 
           # PLOT 2b
-          dccMarkdown('**Step 3:** Select one or more groups to see average suicide rates by demographics in each country.'),
+          dccMarkdown('**Step 3:** Select one or more groups to see average suicide rates by demographics in each country.  
+                      Note: If only one bar shows up, there is no demographic data available for the other selected country.'),
           demoCC,
           graph_2b
         ))
@@ -493,4 +483,4 @@ app$callback(
     make_plot2b(country_value1, country_value2, year_list, demo_list)
   })
 
-app$run_server()
+app$run_server(host = "0.0.0.0", port = Sys.getenv('PORT', 8050))
