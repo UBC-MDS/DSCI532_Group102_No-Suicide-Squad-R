@@ -22,7 +22,7 @@ general_data <- read_csv('https://raw.githubusercontent.com/UBC-MDS/DSCI532_Grou
 regionDD <- dccDropdown(
   id = 'region_dd',
   options = lapply(
-    unique(final_df$sub_region), function(x){
+    sort(unique(final_df$sub_region)), function(x){
       list(label=x, value=x)
     }),
     #value = levels(final_df$sub_region),
@@ -332,7 +332,7 @@ make_plot2b <- function(country_a = 'Canada', country_b = 'United States', year_
         guides(fill = guide_legend(title = "Country")) +
         theme(axis.text.x = element_text(angle = 45))
 
-    chart_2b1 <- ggplotly(chart_2b1, tooltip = c("mean_suicides")) %>% config(displayModeBar = FALSE)
+    chart_2b1 <- ggplotly(chart_2b1, tooltip = c("country", "mean_suicides")) %>% config(displayModeBar = FALSE)
 
     chart_2b2 <- ggplot(data_2b) +
         theme_bw() +
@@ -340,7 +340,7 @@ make_plot2b <- function(country_a = 'Canada', country_b = 'United States', year_
         labs(x = 'Demographic Groups', y = 'Average Suicide Rate (per 100k pop)', title = 'Suicide Rate by Demographic Group') +
         guides(fill = guide_legend(title = "Country"))
 
-    chart_2b2 <- ggplotly(chart_2b2, tooltip = c("mean_suicides")) %>% config(displayModeBar = FALSE)
+    chart_2b2 <- ggplotly(chart_2b2, tooltip = c("country", "mean_suicides")) %>% config(displayModeBar = FALSE)
 
     decide_output <- group_by(data_2b,demo_group) %>% count()
     
@@ -392,14 +392,14 @@ graph_2b <- dccGraph(
 app$layout(htmlDiv(list(
   htmlH2('Understanding Suicide Rates'),
   dccMarkdown("
-                The app is to designed to help you visualize suicide rates in different locations over time, and see how a variety of different factors (i.e. age, gender, and year) affect these rates.
+                This app is to designed to help you visualize suicide rates in different locations over time, and see how a variety of different factors (i.e. age, gender, and year) affect these rates.
                 
-                We have 2 main questions we are trying to answer: 
+                We have 2 main questions we are trying to answer:
 
                 **Tab 1**: How does the suicide rate change over time, and what effect does continent, region, country, age, and gender have on this?  
-                **Tab 2**: How does the suicide rate of one country compare against the suicide rate of another country?   
+                **Tab 2**: How does the suicide rate of one country compare against the suicide rate of another country?
 
-                Click on the 'Worldwide Overview' tab to begin exploring, and then move on to Tabs 1 and 2 to dive deeper.  
+                Click on the 'Worldwide Overview' tab to begin exploring, and then move on to Tabs 1 and 2 to dive deeper.
 
                 **If you have thoughts of suicide, please reach out to your local Crisis Centre or Suicide Prevention Hotline.**  
                 **In BC, you can get help by visiting [www.crisiscentre.bc.ca](https://crisiscentre.bc.ca) or by calling 1-800-784-2433 from anywhere in the province.**
@@ -439,14 +439,14 @@ app$layout(htmlDiv(list(
           # PLOT 1b
           htmlH3('Suicide Rate by Region'),
           dccMarkdown('**Step 2:** Are there any sub-regions you are specifically interested in looking at?
-                      Select one or more sub-regions (arranged by continent) to view the average suicide rate by year.'),
+                      Select one or more sub-regions to view the average suicide rate by year.'),
           regionDD,
           graph_1b,
 
           # PLOT 1c
           htmlH3('Suicide Rate by Country'),
           dccMarkdown('**Step 3:** Are there any specific countries you\'d like to look into?
-                      Select one or more countries (arranged by continent) to view the average suicide rate by year.'),
+                      Select one or more countries to view the average suicide rate by year.'),
           countryDD1,
           graph_1c,
 
