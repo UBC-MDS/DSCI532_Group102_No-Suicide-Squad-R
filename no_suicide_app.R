@@ -94,6 +94,14 @@ demoCC <- dccDropdown(
 #### CHART FUNCTIONS
 # TAB (WORLDWIDE OVERVIEW)
 make_world_plot <- function(year_list = list(1987, 2014)) {
+  #' Makes plot (map) showing average suicide rate by country for specified year range
+  #'
+  #' @param year_list A list of year ranges (default: list(1987, 2014))
+  #' @return Interactive plotly graph (map) of average suicide rate by country for specified year range
+  #' @examples
+  #' make_world_plot(year_list = list(1987, 1996))
+  #' make_world_plot(year_list = list(1993, 2010))
+  
   year_start <- year_list[[1]]
   year_end <- year_list[[2]]
 
