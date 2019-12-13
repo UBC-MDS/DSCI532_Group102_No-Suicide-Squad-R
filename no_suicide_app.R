@@ -315,15 +315,31 @@ make_plot2b <- function(country_a = 'Canada', country_b = 'United States', year_
       summarize(mean_suicides = mean(suicides_per_100k_pop, na.rm = TRUE)) %>% 
       modify_if( ~is.numeric(.), ~round(., 3))
     
-    chart_2b <- ggplot(data_2b) +
-      theme_bw() +
-      geom_bar(aes(x = fct_rev(demo_group), y = mean_suicides, fill = country), stat = 'identity', position = position_dodge(width = 0.9)) + 
-      labs(x = 'Demographic Groups', y = 'Average Suicide Rate (per 100k pop)', title = 'Suicide Rate by Demographic Group') +
-      guides(color = guide_legend(title = "Country"))
 
-    chart_2b <- ggplotly(chart_2b, tooltip = c("country", "mean_suicides")) %>% 
-      config(displayModeBar = FALSE)
-    return(chart_2b)
+    chart_2b1 <- ggplot(data_2b) +
+        theme_bw() +
+        geom_bar(aes(x = fct_rev(demo_group), y = mean_suicides, fill = country), stat = 'identity', position = position_dodge(width = 0.9)) + 
+        labs(x = 'Demographic Groups', y = 'Average Suicide Rate (per 100k pop)', title = 'Suicide Rate by Demographic Group') +
+        theme(axis.text.x = element_text(angle = 45))
+
+    chart_2b1 <- ggplotly(chart_2b1, tooltip = c("mean_suicides")) %>% config(displayModeBar = FALSE)
+
+    chart_2b2 <- ggplot(data_2b) +
+        theme_bw() +
+        geom_bar(aes(x = fct_rev(demo_group), y = mean_suicides, fill = country), stat = 'identity', position = position_dodge(width = 0.9)) + 
+        labs(x = 'Demographic Groups', y = 'Average Suicide Rate (per 100k pop)', title = 'Suicide Rate by Demographic Group') +
+        guides(color = guide_legend(title = "Country"))
+
+    chart_2b2 <- ggplotly(chart_2b2, tooltip = c("mean_suicides")) %>% config(displayModeBar = FALSE)
+
+    decide_output <- group_by(data_2b,demo_group) %>% count()
+    
+
+    if (nrow(decide_output) > 8)  {
+      return(chart_2b1)
+    } else {
+      return(chart_2b2)
+    }
 }
 
 #### DCC GRAPHS
@@ -515,4 +531,4 @@ app$callback(
     make_plot2b(country_value1, country_value2, year_list, demo_list)
   })
 
-app$run_server(host = "0.0.0.0", port = Sys.getenv('PORT', 8050))
+app$run_server()
