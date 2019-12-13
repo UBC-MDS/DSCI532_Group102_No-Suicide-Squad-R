@@ -531,4 +531,4 @@ app$callback(
     make_plot2b(country_value1, country_value2, year_list, demo_list)
   })
 
-app$run_server()
+app$run_server(host = "0.0.0.0", port = Sys.getenv('PORT', 8050))
