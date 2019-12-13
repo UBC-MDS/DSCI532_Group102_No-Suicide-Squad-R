@@ -11,9 +11,12 @@ theme_set(theme_bw())
 app <- Dash$new(external_stylesheets = "https://codepen.io/chriddyp/pen/bWLwgP.css")
 
 #### IMPORT DATA
-final_df <- read_csv('https://raw.githubusercontent.com/UBC-MDS/DSCI532_Group102_No-Suicide-Squad-R/test/data/final_df.csv')
-plot_a_data <- read_csv('https://raw.githubusercontent.com/UBC-MDS/DSCI532_Group102_No-Suicide-Squad-R/test/data/plot_a_data.csv')
-general_data <- read_csv('https://raw.githubusercontent.com/UBC-MDS/DSCI532_Group102_No-Suicide-Squad-R/test/data/general_data.csv')
+final_df <- read_csv('https://raw.githubusercontent.com/UBC-MDS/DSCI532_Group102_No-Suicide-Squad-R/master/data/final_df.csv') %>%
+  modify_if( ~is.numeric(.), ~round(., 3))
+plot_a_data <- read_csv('https://raw.githubusercontent.com/UBC-MDS/DSCI532_Group102_No-Suicide-Squad-R/master/data/plot_a_data.csv') %>%
+  modify_if( ~is.numeric(.), ~round(., 3))
+general_data <- read_csv('https://raw.githubusercontent.com/UBC-MDS/DSCI532_Group102_No-Suicide-Squad-R/master/data/general_data.csv') %>%
+  modify_if( ~is.numeric(.), ~round(., 3))
 
 #### DROPDOWNS
 regionDD <- dccDropdown(
@@ -98,7 +101,7 @@ make_world_plot <- function(year_list = list(1987, 2014)) {
     filter(between(year, year_start, year_end)) %>%
     group_by(year,country_code_name,country) %>% 
     summarise(suicides_per_100k_pop = mean(suicides_per_100k_pop)) %>%
-    modify_if( ~is.numeric(.), ~round(., 2))
+    modify_if( ~is.numeric(.), ~round(., 3))
 
   options(repr.plot.width = 7, repr.plot.height = 5)
   l <- list(color = toRGB("black"), width = 0.5)
@@ -131,14 +134,19 @@ make_plot1a <- function() {
   #' @return An interactive plotly graph of suicide rate by continent
   #' @examples
   #' make_plot1a()
+  
     plot_1a <- ggplot() +
-    geom_line(data =plot_a_data, aes(x=year, y=suicides_per_100k_pop,color = continent)) +
-    geom_line(data =general_data, aes(x=year, y=suicides_per_100k_pop,color = Label),linetype = "dashed") +
-    ggtitle("Suicide Rate by Continent") +
-    ylab("Suicides per 100k pop") +
-    xlab("Year") +
-    guides(color=guide_legend(title="Continents"))+
-    theme_bw()
+      geom_line(data =plot_a_data, aes(x = year, y = suicides_per_100k_pop,color = continent)) +
+      geom_line(data =general_data, aes(x = year, y = suicides_per_100k_pop,color = Label),linetype = "dashed") +
+      ggtitle("Suicide Rate by Continent") +
+      ylab("Suicides per 100k pop") +
+      xlab("Year") +
+      guides(color=guide_legend(title="Continents"))+
+      scale_x_continuous(breaks = c(1985, 1990, 1995, 2000, 2005, 2010, 2015), 
+        labels = c(1985, 1990, 1995, 2000, 2005, 2010, 2015),
+        limits = c(1985, 2016)) +
+      theme_bw()
+
     plot_1a <- ggplotly(plot_1a)
     return(plot_1a)
 }
@@ -156,20 +164,23 @@ make_plot1b <- function(selected_regions = list('Central America','Western Europ
     #a <- c('Central America','Western Europe')
     
     plot_b_data <- final_df %>%
-    filter(sub_region %in% selected_regions) %>%
-    group_by(year,sub_region) %>% 
-    summarise(suicides_per_100k_pop = mean(suicides_per_100k_pop)) %>%
-    modify_if( ~is.numeric(.), ~round(., 2))
+      filter(sub_region %in% selected_regions) %>%
+      group_by(year,sub_region) %>% 
+      summarise(suicides_per_100k_pop = mean(suicides_per_100k_pop)) %>%
+      modify_if( ~is.numeric(.), ~round(., 3))
     
     options(repr.plot.width = 7, repr.plot.height = 5)
     plot_1_b <- ggplot() +
-    geom_line(data =general_data, aes(x=year, y=suicides_per_100k_pop,color = Label), linetype = "dashed")+
-    geom_line(data =plot_b_data, aes(x=year, y=suicides_per_100k_pop,color = sub_region))+
-    ggtitle("Suicide Rate by Region") +
-    ylab("Suicides per 100k pop") +
-    xlab("Year") +
-    guides(color=guide_legend(title="Regions"))+
-    theme_bw()
+      geom_line(data =general_data, aes(x=year, y=suicides_per_100k_pop,color = Label), linetype = "dashed")+
+      geom_line(data =plot_b_data, aes(x=year, y=suicides_per_100k_pop,color = sub_region))+
+      ggtitle("Suicide Rate by Region") +
+      ylab("Suicides per 100k pop") +
+      xlab("Year") +
+      guides(color=guide_legend(title="Regions"))+
+      scale_x_continuous(breaks = c(1985, 1990, 1995, 2000, 2005, 2010, 2015), 
+        labels = c(1985, 1990, 1995, 2000, 2005, 2010, 2015),
+        limits = c(1985, 2016)) +
+      theme_bw()
     
     plot_1b <- ggplotly(plot_1_b)
     return(plot_1b)
@@ -187,19 +198,23 @@ make_plot1c <- function(selected_countries_c = list("Canada", "United States")) 
     countries_c <- c(selected_countries_c)
 
     country_df <- final_df %>%
-    mutate(suicides_by_pop = suicides_no/(population/100000)) %>%
-    filter(country %in% countries_c) %>%
-    group_by(country, year) %>%
-    summarize(suicide_rate = mean(suicides_by_pop)) 
+      mutate(suicides_by_pop = suicides_no/(population/100000)) %>%
+      filter(country %in% countries_c) %>%
+      group_by(country, year) %>%
+      summarize(suicide_rate = mean(suicides_by_pop)) %>%
+      modify_if( ~is.numeric(.), ~round(., 3))
 
     options(repr.plot.width = 7, repr.plot.height = 5)
     country_plot_gg <- ggplot() + 
-    geom_line(data = country_df, aes(x = year, y = suicide_rate, color = country)) +
-    geom_line(data =general_data, aes(x=year, y=suicides_per_100k_pop,color = Label),linetype = "dashed") +
-    labs(x = "Year", 
-         y = "Suicides per 100k pop", 
-         title = "Suicide Rate per Country",
-         color = "Country")
+      geom_line(data = general_data, aes(x=year, y=suicides_per_100k_pop,color = Label),linetype = "dashed") +
+      geom_line(data = country_df, aes(x = year, y = suicide_rate, color = country)) +
+      labs(x = "Year", 
+          y = "Suicides per 100k pop", 
+          title = "Suicide Rate per Country",
+          color = "Country") +
+        scale_x_continuous(breaks = c(1985, 1990, 1995, 2000, 2005, 2010, 2015), 
+          labels = c(1985, 1990, 1995, 2000, 2005, 2010, 2015),
+          limits = c(1985, 2016))
 
     country_plot <- ggplotly(country_plot_gg)
     return(country_plot)
@@ -217,19 +232,23 @@ make_plot1d <- function(selected_countries_d = list("Canada", "United States")) 
     countries_d <- c(selected_countries_d)
 
     demographic_df <- final_df %>%
-    mutate(suicides_by_pop = suicides_no/(population/100000)) %>%
-    filter(country %in% countries_d) %>%
-    group_by(sex, year) %>%
-    summarize(suicide_rate = mean(suicides_by_pop, na.rm = TRUE))
+      mutate(suicides_by_pop = suicides_no/(population/100000)) %>%
+      filter(country %in% countries_d) %>%
+      group_by(sex, year) %>%
+      summarize(suicide_rate = mean(suicides_by_pop, na.rm = TRUE)) %>%
+      modify_if( ~is.numeric(.), ~round(., 3))
 
     options(repr.plot.width = 7, repr.plot.height = 5)
     demographic_plot <- ggplot() + 
-      geom_line(data = demographic_df, aes(x = year, y = suicide_rate, color = sex)) + 
       geom_line(data =general_data, aes(x=year, y=suicides_per_100k_pop,color = Label),linetype = "dashed") +
+      geom_line(data = demographic_df, aes(x = year, y = suicide_rate, color = sex)) + 
       labs(x = "Year", 
           y = "Suicides per 100 k pop", 
           title = "Average Suicide Rate by Sex in Selected Country (Countries)",
-          color = "Sex")
+          color = "Sex") +
+      scale_x_continuous(breaks = c(1985, 1990, 1995, 2000, 2005, 2010, 2015), 
+        labels = c(1985, 1990, 1995, 2000, 2005, 2010, 2015),
+        limits = c(1985, 2016))
 
     dem_plot <- ggplotly(demographic_plot)
     return(dem_plot)
@@ -256,7 +275,8 @@ make_plot2a <- function(country_a = 'Canada', country_b = 'United States', year_
       filter(year >= year_start & year <= year_end) %>%
       filter(country == country_a | country == country_b) %>%
       group_by(country) %>%
-      summarize(mean_suicides = mean(suicides_per_100k_pop, na.rm = TRUE))
+      summarize(mean_suicides = mean(suicides_per_100k_pop, na.rm = TRUE)) %>%
+      modify_if( ~is.numeric(.), ~round(., 3))
 
     chart_2a <- ggplot(data_2a) +
         theme_bw() +
@@ -287,13 +307,15 @@ make_plot2b <- function(country_a = 'Canada', country_b = 'United States', year_
     demos <- c(demo_selection)
 
     data_2b <- final_df %>%
-    filter(suicides_per_100k_pop > 0.1) %>%
-    filter(year >= year_start & year <= year_end) %>%
-    filter(country == country_a | country == country_b) %>%
-    filter(demo_group %in% demos) %>%
-    group_by(country, demo_group) %>%
-    summarize(mean_suicides = mean(suicides_per_100k_pop, na.rm = TRUE))
+      filter(suicides_per_100k_pop > 0.1) %>%
+      filter(year >= year_start & year <= year_end) %>%
+      filter(country == country_a | country == country_b) %>%
+      filter(demo_group %in% demos) %>%
+      group_by(country, demo_group) %>%
+      summarize(mean_suicides = mean(suicides_per_100k_pop, na.rm = TRUE)) %>% 
+      modify_if( ~is.numeric(.), ~round(., 3))
     
+
     chart_2b1 <- ggplot(data_2b) +
         theme_bw() +
         geom_bar(aes(x = fct_rev(demo_group), y = mean_suicides, fill = country), stat = 'identity', position = position_dodge(width = 0.9)) + 
@@ -318,9 +340,6 @@ make_plot2b <- function(country_a = 'Canada', country_b = 'United States', year_
     } else {
       return(chart_2b2)
     }
-
-
-    
 }
 
 #### DCC GRAPHS
@@ -383,9 +402,14 @@ app$layout(htmlDiv(list(
         label = 'Overview',
         value = 'tab value',
         children = htmlDiv(className = 'control-tab', children = list(
-          htmlP('Written instructions go here.', id = 'text0'),
-          yearSlider_wm,
+          htmlH2('Worldwide Overview'),
+
+          htmlP('The map below shows average suicide rates by country. 
+                Try selecting a range of years and hover over the map to see what countries have interesting data.', 
+                id = 'text0'),
           htmlIframe(height=15, width=5, style=list(borderWidth = 0)), #space
+          yearSlider_wm,
+          htmlIframe(height=30, width=5, style=list(borderWidth = 0)), #space
           graph_wm
 
         ))
@@ -436,9 +460,8 @@ app$layout(htmlDiv(list(
           htmlIframe(height=15, width=5, style=list(borderWidth = 0)), #space
           dccMarkdown('**Step 2:** Select a range of years to see the average suicide rate for this time frame.'),
           yearSlider2,
-          htmlIframe(height=15, width=5, style=list(borderWidth = 0)), #space
+          htmlIframe(height=20, width=5, style=list(borderWidth = 0)), #space
           graph_2a,
-
           htmlIframe(height=20, width=5, style=list(borderWidth = 0)), #space
 
           # PLOT 2b
