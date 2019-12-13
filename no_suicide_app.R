@@ -142,9 +142,9 @@ make_plot1a <- function() {
       ylab("Suicides per 100k pop") +
       xlab("Year") +
       guides(color=guide_legend(title="Continents"))+
-      scale_x_continuous(breaks = c(1985, 1990, 1995, 2000, 2005, 2010, 2015), 
-        labels = c(1985, 1990, 1995, 2000, 2005, 2010, 2015),
-        limits = c(1985, 2016)) +
+      scale_x_continuous(breaks = c(1990, 1995, 2000, 2005, 2010), 
+        labels = c(1990, 1995, 2000, 2005, 2010),
+        limits = c(1987, 2014))
       theme_bw()
 
     plot_1a <- ggplotly(plot_1a)
@@ -177,9 +177,9 @@ make_plot1b <- function(selected_regions = list('Central America','Western Europ
       ylab("Suicides per 100k pop") +
       xlab("Year") +
       guides(color=guide_legend(title="Regions"))+
-      scale_x_continuous(breaks = c(1985, 1990, 1995, 2000, 2005, 2010, 2015), 
-        labels = c(1985, 1990, 1995, 2000, 2005, 2010, 2015),
-        limits = c(1985, 2016)) +
+      scale_x_continuous(breaks = c(1990, 1995, 2000, 2005, 2010), 
+        labels = c(1990, 1995, 2000, 2005, 2010),
+        limits = c(1987, 2014))
       theme_bw()
     
     plot_1b <- ggplotly(plot_1_b)
@@ -212,9 +212,9 @@ make_plot1c <- function(selected_countries_c = list("Canada", "United States")) 
           y = "Suicides per 100k pop", 
           title = "Suicide Rate per Country",
           color = "Country") +
-        scale_x_continuous(breaks = c(1985, 1990, 1995, 2000, 2005, 2010, 2015), 
-          labels = c(1985, 1990, 1995, 2000, 2005, 2010, 2015),
-          limits = c(1985, 2016))
+      scale_x_continuous(breaks = c(1990, 1995, 2000, 2005, 2010), 
+        labels = c(1990, 1995, 2000, 2005, 2010),
+        limits = c(1987, 2014))
 
     country_plot <- ggplotly(country_plot_gg)
     return(country_plot)
@@ -246,9 +246,9 @@ make_plot1d <- function(selected_countries_d = list("Canada", "United States")) 
           y = "Suicides per 100 k pop", 
           title = "Average Suicide Rate by Sex in Selected Country (Countries)",
           color = "Sex") +
-      scale_x_continuous(breaks = c(1985, 1990, 1995, 2000, 2005, 2010, 2015), 
-        labels = c(1985, 1990, 1995, 2000, 2005, 2010, 2015),
-        limits = c(1985, 2016))
+      scale_x_continuous(breaks = c(1990, 1995, 2000, 2005, 2010), 
+        labels = c(1990, 1995, 2000, 2005, 2010),
+        limits = c(1987, 2014))
 
     dem_plot <- ggplotly(demographic_plot)
     return(dem_plot)
@@ -399,7 +399,7 @@ app$layout(htmlDiv(list(
   htmlDiv(className = 'app_body', children = list(
     dccTabs(id = 'control-tabs', value = 'tabs', children = list(
       dccTab(
-        label = 'Overview',
+        label = 'Worldwide Overview',
         value = 'tab value',
         children = htmlDiv(className = 'control-tab', children = list(
           htmlH2('Worldwide Overview'),
@@ -458,7 +458,7 @@ app$layout(htmlDiv(list(
           countryDD2a,
           countryDD2b,
           htmlIframe(height=15, width=5, style=list(borderWidth = 0)), #space
-          dccMarkdown('**Step 2:** Select a range of years to see the average suicide rate for this time frame.'),
+          dccMarkdown('**Step 2:** Select a range of years to see the average suicide rates for this time frame.'),
           yearSlider2,
           htmlIframe(height=20, width=5, style=list(borderWidth = 0)), #space
           graph_2a,
