@@ -64,10 +64,10 @@ names(yearMarks_wm) <- unique(final_df$year)
 yearSlider_wm <- dccRangeSlider(
   id = 'year_slider_wm',
   marks = yearMarks_wm,
-  min = 1986,
-  max = 2014,
+  min = 1985,
+  max = 2016,
   step = 1,
-  value = list(1986, 2014)
+  value = list(1987, 2014)
 )
 
 yearMarks2 <- lapply(unique(final_df$year), as.character)
@@ -75,10 +75,10 @@ names(yearMarks2) <- unique(final_df$year)
 yearSlider2 <- dccRangeSlider(
   id = 'year_slider',
   marks = yearMarks2,
-  min = 1986,
-  max = 2014,
+  min = 1985,
+  max = 2016,
   step = 1,
-  value = list(1986, 2014)
+  value = list(1987, 2014)
 )
 
 demoCC <- dccDropdown(
@@ -283,7 +283,8 @@ make_plot2a <- function(country_a = 'Canada', country_b = 'United States', year_
         geom_bar(aes(x = fct_rev(country), y = mean_suicides, fill = country), stat = 'identity') +
         labs(x = 'Country', y = 'Average Suicide Rate (per 100k pop)', title = 'Suicide Rate by Country') +
         coord_flip() +
-        theme(legend.position = "none") 
+        theme(legend.position = "none")
+        
     chart_2a <- ggplotly(chart_2a, tooltip = c("country", "mean_suicides")) %>% config(displayModeBar = FALSE)
     return(chart_2a)
 }
@@ -320,6 +321,7 @@ make_plot2b <- function(country_a = 'Canada', country_b = 'United States', year_
         theme_bw() +
         geom_bar(aes(x = fct_rev(demo_group), y = mean_suicides, fill = country), stat = 'identity', position = position_dodge(width = 0.9)) + 
         labs(x = 'Demographic Groups', y = 'Average Suicide Rate (per 100k pop)', title = 'Suicide Rate by Demographic Group') +
+        guides(fill = guide_legend(title = "Country")) +
         theme(axis.text.x = element_text(angle = 45))
 
     chart_2b1 <- ggplotly(chart_2b1, tooltip = c("mean_suicides")) %>% config(displayModeBar = FALSE)
@@ -328,7 +330,7 @@ make_plot2b <- function(country_a = 'Canada', country_b = 'United States', year_
         theme_bw() +
         geom_bar(aes(x = fct_rev(demo_group), y = mean_suicides, fill = country), stat = 'identity', position = position_dodge(width = 0.9)) + 
         labs(x = 'Demographic Groups', y = 'Average Suicide Rate (per 100k pop)', title = 'Suicide Rate by Demographic Group') +
-        guides(color = guide_legend(title = "Country"))
+        guides(fill = guide_legend(title = "Country"))
 
     chart_2b2 <- ggplotly(chart_2b2, tooltip = c("mean_suicides")) %>% config(displayModeBar = FALSE)
 
@@ -382,7 +384,7 @@ graph_2b <- dccGraph(
 app$layout(htmlDiv(list(
   htmlH2('Understanding Suicide Rates'),
   dccMarkdown("
-                The purpose of this app is to help you visualize suicide rates in different locations over time, and see how a variety of different factors (i.e. age, gender, and year) affect these rates.  
+                The app is to designed to help you visualize suicide rates in different locations over time, and see how a variety of different factors (i.e. age, gender, and year) affect these rates.
                 
                 We have 2 main questions we are trying to answer: 
 
