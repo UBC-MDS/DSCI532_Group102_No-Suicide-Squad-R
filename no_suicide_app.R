@@ -11,9 +11,9 @@ theme_set(theme_bw())
 app <- Dash$new(external_stylesheets = "https://codepen.io/chriddyp/pen/bWLwgP.css")
 
 #### IMPORT DATA
-final_df <- read_csv('data/final_df.csv')
-plot_a_data <- read_csv('data/plot_a_data.csv')
-general_data <- read_csv('data/general_data.csv')
+final_df <- read_csv('https://raw.githubusercontent.com/UBC-MDS/DSCI532_Group102_No-Suicide-Squad-R/test/data/final_df.csv')
+plot_a_data <- read_csv('https://raw.githubusercontent.com/UBC-MDS/DSCI532_Group102_No-Suicide-Squad-R/test/data/plot_a_data.csv')
+general_data <- read_csv('https://raw.githubusercontent.com/UBC-MDS/DSCI532_Group102_No-Suicide-Squad-R/test/data/general_data.csv')
 
 #### DROPDOWNS
 regionDD <- dccDropdown(
@@ -132,8 +132,8 @@ make_plot1a <- function() {
   #' @examples
   #' make_plot1a()
     plot_1a <- ggplot() +
-    geom_line(data =plot_a_data, aes(x=year, y=suicides_per_100k_pop,color = continent))+
-    geom_line(data =general_data, aes(x=year, y=suicides_per_100k_pop,color = Label),linetype = "dashed")+
+    geom_line(data =plot_a_data, aes(x=year, y=suicides_per_100k_pop,color = continent)) +
+    geom_line(data =general_data, aes(x=year, y=suicides_per_100k_pop,color = Label),linetype = "dashed") +
     ggtitle("Suicide Rate by Continent") +
     ylab("Suicides per 100k pop") +
     xlab("Year") +
@@ -193,8 +193,9 @@ make_plot1c <- function(selected_countries_c = list("Canada", "United States")) 
     summarize(suicide_rate = mean(suicides_by_pop)) 
 
     options(repr.plot.width = 7, repr.plot.height = 5)
-    country_plot_gg <- ggplot(data = country_df, aes(x = year, y = suicide_rate, fill = country, color = country)) + 
-    geom_line() +
+    country_plot_gg <- ggplot() + 
+    geom_line(data = country_df, aes(x = year, y = suicide_rate, color = country)) +
+    geom_line(data =general_data, aes(x=year, y=suicides_per_100k_pop,color = Label),linetype = "dashed") +
     labs(x = "Year", 
          y = "Suicides per 100k pop", 
          title = "Suicide Rate per Country",
@@ -222,8 +223,9 @@ make_plot1d <- function(selected_countries_d = list("Canada", "United States")) 
     summarize(suicide_rate = mean(suicides_by_pop, na.rm = TRUE))
 
     options(repr.plot.width = 7, repr.plot.height = 5)
-    demographic_plot <- ggplot(data = demographic_df, aes(x = year, y = suicide_rate, fill = sex, color = sex)) + 
-      geom_line() + 
+    demographic_plot <- ggplot() + 
+      geom_line(data = demographic_df, aes(x = year, y = suicide_rate, color = sex)) + 
+      geom_line(data =general_data, aes(x=year, y=suicides_per_100k_pop,color = Label),linetype = "dashed") +
       labs(x = "Year", 
           y = "Suicides per 100 k pop", 
           title = "Average Suicide Rate by Sex in Selected Country (Countries)",
@@ -262,7 +264,7 @@ make_plot2a <- function(country_a = 'Canada', country_b = 'United States', year_
         labs(x = 'Country', y = 'Average Suicide Rate (per 100k pop)', title = 'Suicide Rate by Country') +
         coord_flip() +
         theme(legend.position = "none") 
-    chart_2a <- ggplotly(chart_2a, tooltip = c("mean_suicides")) %>% config(displayModeBar = FALSE)
+    chart_2a <- ggplotly(chart_2a, tooltip = c("country", "mean_suicides")) %>% config(displayModeBar = FALSE)
     return(chart_2a)
 }
 
@@ -303,7 +305,8 @@ make_plot2b <- function(country_a = 'Canada', country_b = 'United States', year_
     chart_2b2 <- ggplot(data_2b) +
         theme_bw() +
         geom_bar(aes(x = fct_rev(demo_group), y = mean_suicides, fill = country), stat = 'identity', position = position_dodge(width = 0.9)) + 
-        labs(x = 'Demographic Groups', y = 'Average Suicide Rate (per 100k pop)', title = 'Suicide Rate by Demographic Group')
+        labs(x = 'Demographic Groups', y = 'Average Suicide Rate (per 100k pop)', title = 'Suicide Rate by Demographic Group') +
+        guides(color = guide_legend(title = "Country"))
 
     chart_2b2 <- ggplotly(chart_2b2, tooltip = c("mean_suicides")) %>% config(displayModeBar = FALSE)
 
@@ -430,15 +433,19 @@ app$layout(htmlDiv(list(
           dccMarkdown('**Step 1:** Select 2 countries that you would like to compare (1 country per dropdown)'),
           countryDD2a,
           countryDD2b,
+          htmlIframe(height=15, width=5, style=list(borderWidth = 0)), #space
           dccMarkdown('**Step 2:** Select a range of years to see the average suicide rate for this time frame.'),
           yearSlider2,
           htmlIframe(height=15, width=5, style=list(borderWidth = 0)), #space
           graph_2a,
 
+          htmlIframe(height=20, width=5, style=list(borderWidth = 0)), #space
+
           # PLOT 2b
           dccMarkdown('**Step 3:** Select one or more groups to see average suicide rates by demographics in each country.  
-                      Note: If only one bar shows up, there is no demographic data available for the other selected country.'),
+                      Note: If only one bar appears by default, there is no demographic data available for the other selected country.'),
           demoCC,
+          htmlIframe(height=15, width=5, style=list(borderWidth = 0)), #space
           graph_2b
         ))
       )
